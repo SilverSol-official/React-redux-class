@@ -1,0 +1,44 @@
+.defaultButton{
+    width: 80px;
+    height:80px;
+    margin-top: 10px;
+    background-color: white;
+    border:none;
+    outline:none;
+}
+
+.Accordion{
+    width:50%;
+    margin-left: 0px;
+    margin:auto;
+}
+
+.containerI{
+    width:60%;
+    justify-content:center;
+    margin:auto;
+}
+
+.flex{
+    display: flex;
+}
+
+.Acordion , .btn{
+    display: inline-block;
+}
+
+.trashButton{
+    color:red;
+}
+
+.done{
+    color:green;
+}
+
+.process{
+    color:orange;
+}
+
+.unVisible{
+    display:none;
+}

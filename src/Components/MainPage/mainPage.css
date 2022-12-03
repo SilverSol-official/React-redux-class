@@ -1,0 +1,19 @@
+.taskListContainer{
+    margin: 20px auto;
+}
+.filter{
+    width: 10%;
+    margin:auto;
+    margin-top: 30px;
+    border: solid black 1px;
+}
+
+.center{
+    margin: auto;
+    margin-top: 30px;
+    width:50%;
+}
+
+.mb{
+    margin-bottom: 10PX;
+}
