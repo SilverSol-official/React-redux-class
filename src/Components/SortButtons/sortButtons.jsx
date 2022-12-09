@@ -1,8 +1,11 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/prefer-stateless-function */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/jsx-fragments */
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   MenuItem, Typography, AccordionDetails, AccordionSummary, Accordion,
@@ -14,80 +17,91 @@ import {
 import './filterButton.css';
 
 // eslint-disable-next-line import/prefer-default-export,react/function-component-definition
-export const FilterButton = () => {
-  const dispatch = useDispatch();
-  const onDone = React.useCallback(() => {
-    dispatch(showDoneTask());
-  }, [dispatch]);
-  const onAll = React.useCallback(() => {
-    dispatch(showAllTasks());
-  }, [dispatch]);
-  const onProcess = React.useCallback(() => {
-    dispatch(showProcessTasks());
-  }, [dispatch]);
-  const onOld = React.useCallback(() => {
-    dispatch(showOldTasks());
-  }, [dispatch]);
-  const onNew = React.useCallback(() => {
-    dispatch(showNewTasks());
-  }, [dispatch]);
+class FilterButton extends React.Component {
+  onDone = () => {
+    this.props.dispatchOnDone();
+  };
 
-  return (
-    <div>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>Filter by :</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <MenuItem onClick={onAll}>All</MenuItem>
-          <MenuItem>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>Status</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <MenuItem onClick={onDone}>Done</MenuItem>
-                <MenuItem onClick={onProcess}>In Process</MenuItem>
-              </AccordionDetails>
-            </Accordion>
-          </MenuItem>
-          <MenuItem>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>Date</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <MenuItem onClick={onNew}>New to top</MenuItem>
-                <MenuItem onClick={onOld}>Old to top</MenuItem>
-              </AccordionDetails>
-            </Accordion>
-          </MenuItem>
-        </AccordionDetails>
-      </Accordion>
-    </div>
-  );
+  onAll = () => {
+    this.props.dispatchOnAll();
+  };
+
+  onProcess = () => {
+    this.props.dispatchOnProcess();
+  };
+
+  onOld = () => {
+    this.props.dispatchOnOld();
+  };
+
+  onNew = () => {
+    this.props.dispatchOnNew();
+  };
+
+  render() {
+    return (
+      <div>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>Filter by :</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <MenuItem onClick={this.onAll}>All</MenuItem>
+            <MenuItem>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>Status</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <MenuItem onClick={this.onDone}>Done</MenuItem>
+                  <MenuItem onClick={this.onProcess}>In Process</MenuItem>
+                </AccordionDetails>
+              </Accordion>
+            </MenuItem>
+            <MenuItem>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>Date</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <MenuItem onClick={this.onNew}>New to top</MenuItem>
+                  <MenuItem onClick={this.onOld}>Old to top</MenuItem>
+                </AccordionDetails>
+              </Accordion>
+            </MenuItem>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+    );
+  }
+}
+
+FilterButton.propTypes = {
+  dispatchOnDone: PropTypes.func,
+  dispatchOnAll: PropTypes.func,
+  dispatchOnProcess: PropTypes.func,
+  dispatchOnOld: PropTypes.func,
+  dispatchOnNew: PropTypes.func,
 };
 
-// export default function MenuPopupState() {
-//   return (
-// <div className="searchContainer">
-//   <button type="button" className="searchButtons" onClick={onAll}>All</button>
-//   <button type="button" className="searchButtons" onClick={onDone}>Done</button>
-//   <button type="button" className="searchButtons" onClick={onProcess}>In process</button>
-//   <button type="button" className="searchButtons" onClick={onNew}>New to top</button>
-//   <button type="button" className="searchButtons" onClick={onOld}>Old to top</button>
-// </div>
-//   );
-// }
+const mapDispatchToProps = (dispatch) => ({
+  dispatchOnDone: () => dispatch(showDoneTask()),
+  dispatchOnAll: () => dispatch(showAllTasks()),
+  dispatchOnProcess: () => dispatch(showProcessTasks()),
+  dispatchOnOld: () => dispatch(showOldTasks()),
+  dispatchOnNew: () => dispatch(showNewTasks()),
+});
+
+export default connect(null, mapDispatchToProps)(FilterButton);

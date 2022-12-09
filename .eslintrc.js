@@ -17,7 +17,6 @@ module.exports = {
     'react',
   ],
   rules: {
-    'react/function-component-definition': ['off'],
     'import/prefere-default-export': ['off'],
     'react/require-default-props': ['off'],
     'default-param-last': ['off'],

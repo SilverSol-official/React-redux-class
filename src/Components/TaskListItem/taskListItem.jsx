@@ -1,3 +1,6 @@
+/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/prefer-stateless-function */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/prop-types */
 import * as React from 'react';
@@ -5,95 +8,96 @@ import PropTypes from 'prop-types';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneIcon from '@mui/icons-material/Done';
-import { useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { AcordionInfo } from '../AcordionInfo/acordionInfo';
-import { AccordionEdit } from '../AcordionEdit/acordionEdit';
+import AccordionEdit from '../AcordionEdit/acordionEdit';
 // import { changeProgressTaskThunk } from '../../rdx/items/thunks';
 import { removeTaskThunk, putTaskThunk } from '../../rdx/items/thunks';
 import './taskListItem.css';
 
 // eslint-disable-next-line import/prefer-default-export,react/function-component-definition
-export const Task = ({ task }) => {
-  let doneButtonClass = 'defaultButton';
-  let processButtonClass = 'defaultButton';
-  let visibility = '';
+class Task extends React.Component {
+  DeleteTask = () => {
+    this.props.dispatchRemoveTaskThunk(this.props.task.id);
+  };
 
-  if (task.completed) {
-    doneButtonClass += ' done';
-  }
+  Process = () => {
+    this.props.task.inProcess = !this.props.task.inProcess;
+    this.props.dispatchPutTaskThunk(this.props.task);
+  };
 
-  if (task.inProcess) {
-    processButtonClass += ' process';
-  }
+  Done = () => {
+    this.props.task.completed = !this.props.task.completed;
+    this.props.task.inProcess = false;
+    this.props.dispatchPutTaskThunk(this.props.task);
+  };
 
-  if (!task.visible) {
-    visibility = 'containerI unVisible';
-  } else {
-    visibility = 'containerI flex';
-  }
+  render() {
+    let doneButtonClass = 'defaultButton';
+    let processButtonClass = 'defaultButton';
+    let visibility = '';
 
-  const dispatch = useDispatch();
+    if (this.props.task.completed) {
+      doneButtonClass += ' done';
+    }
 
-  const DeleteTask = React.useCallback(() => {
-    dispatch(removeTaskThunk(task.id));
-  }, [task]);
+    if (this.props.task.inProcess) {
+      processButtonClass += ' process';
+    }
 
-  const Process = React.useCallback(() => {
-    task.inProcess = !task.inProcess;
-    dispatch(putTaskThunk(task));
-  }, [task]);
+    if (!this.props.task.visible) {
+      visibility = 'containerI unVisible';
+    } else {
+      visibility = 'containerI flex';
+    }
+    return (
+      <div className={visibility}>
+        <button
+          type="button"
+          className={doneButtonClass}
+          onClick={this.Done}
+        >
+          <DoneIcon />
+        </button>
+        <div className="Accordion">
+          <AcordionInfo task={this.props.task} />
+        </div>
+        <button
+          type="button"
+          className={processButtonClass}
+          onClick={this.Process}
+        >
+          <KeyboardDoubleArrowRightIcon />
+        </button>
+        <div className="accordion-edit">
+          <AccordionEdit task={this.props.task} />
+        </div>
 
-  const Done = React.useCallback(() => {
-    task.completed = !task.completed;
-    task.inProcess = false;
-    dispatch(putTaskThunk(task));
-  }, [task]);
-
-  return (
-    <div className={visibility}>
-      <button
-        type="button"
-        className={doneButtonClass}
-        onClick={Done}
-      >
-        <DoneIcon />
-      </button>
-      <div className="Accordion">
-        <AcordionInfo task={task} />
+        <button
+          type="button"
+          className="defaultButton trashButton"
+          onClick={this.DeleteTask}
+        >
+          <DeleteIcon />
+        </button>
       </div>
-      <button
-        type="button"
-        className={processButtonClass}
-        onClick={Process}
-      >
-        <KeyboardDoubleArrowRightIcon />
-      </button>
-      <div className="accordion-edit">
-        <AccordionEdit task={task} />
-      </div>
-
-      <button
-        type="button"
-        className="defaultButton trashButton"
-        onClick={DeleteTask}
-      >
-        <DeleteIcon />
-      </button>
-    </div>
-  );
-};
+    );
+  }
+}
 
 // eslint-disable-next-line react/no-typos
 Task.propTypes = {
   // eslint-disable-next-line react/require-default-props
-  task: PropTypes.shape({
-    id: PropTypes.string,
-    taskLabel: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    completed: PropTypes.bool.isRequired,
-    inProcess: PropTypes.bool.isRequired,
-    creationDate: PropTypes.string.isRequired,
-    changed: PropTypes.bool.isRequired,
-    visible: PropTypes.bool.isRequired,
-  }),
+  dispatchPutTaskThunk: PropTypes.func,
+  dispatchRemoveTaskThunk: PropTypes.func,
 };
+
+// const mapStateToProps = (state) => ({
+// });
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchPutTaskThunk: (task) => dispatch(putTaskThunk(task)),
+  dispatchRemoveTaskThunk: (task) => dispatch(removeTaskThunk(task)),
+});
+
+export default connect(null, mapDispatchToProps)(Task);

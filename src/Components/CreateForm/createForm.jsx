@@ -1,10 +1,12 @@
+/* eslint-disable import/order */
 import * as React from 'react';
 import PostAddIcon from '@mui/icons-material/PostAdd';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import { addTasksThunk } from '../../rdx/items/thunks';
 import { addTasksLoading } from '../../rdx/items/selectors';
 import './createForm.css';
+import PropTypes from 'prop-types';
 
 const initialTask = {
   taskLabel: '',
@@ -16,61 +18,94 @@ const initialTask = {
   visible: true,
 };
 
+//   const onSubmit = React.useCallback(() => {
+//     // eslint-disable-next-line no-console
+//     dispatch(addTasksThunk({ task }));
+//     setTask(initialTask);
+//   }, [task, dispatch]);
+
 // eslint-disable-next-line import/prefer-default-export
-export function CreateForm() {
-  const [task, setTask] = React.useState(initialTask);
-  const isAddLoading = useSelector(addTasksLoading);
-  const onChange = React.useCallback((event) => {
-    setTask({
-      ...task,
-      [event.target.name]: event.target.value,
+class CreateForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      task: initialTask,
+    };
+  }
+
+  onChange = (event) => {
+    const { task } = this.state;
+    this.setState({
+      task: {
+        ...task,
+        [event.target.name]: event.target.value,
+      },
     });
-  }, [task]);
+  };
 
-  const dispatch = useDispatch();
+  onSubmit = () => {
+    const { dispatchAddTasksThunk } = this.props;
+    const { task } = this.state;
+    dispatchAddTasksThunk({ task });
+    this.setState({ task: initialTask });
+  };
 
-  const onSubmit = React.useCallback(() => {
-    // eslint-disable-next-line no-console
-    dispatch(addTasksThunk({ task }));
-    setTask(initialTask);
-  }, [task, dispatch]);
-  return (
-    <div>
-      <div className="container ">
-        <form
-          className="formHolder"
-        >
-          <input
-            type="text"
-            placeholder="Your task:"
-            className="w-100 inputHolder"
-            name="taskLabel"
-            onChange={onChange}
-            value={task.taskLabel}
-          />
-          <input
-            type="text"
-            placeholder="Description:"
-            className="w-100 inputHolder"
-            name="description"
-            onChange={onChange}
-            value={task.description}
-          />
-          { isAddLoading
-            ? <CircularProgress />
-            : (
-              <button
-                type="button"
-                className="w-100 btn-create"
-                onClick={onSubmit}
-              >
-                <PostAddIcon
-                  fontSize="large"
-                />
-              </button>
-            )}
-        </form>
+  render() {
+    const { isAddLoading } = this.props;
+    const { task } = this.state;
+    return (
+      <div>
+        <div className="container ">
+          <form
+            className="formHolder"
+          >
+            <input
+              type="text"
+              placeholder="Your task:"
+              className="w-100 inputHolder"
+              name="taskLabel"
+              onChange={this.onChange}
+              value={task.taskLabel}
+            />
+            <input
+              type="text"
+              placeholder="Description:"
+              className="w-100 inputHolder"
+              name="description"
+              onChange={this.onChange}
+              value={task.description}
+            />
+            { isAddLoading
+              ? <CircularProgress />
+              : (
+                <button
+                  type="button"
+                  className="w-100 btn-create"
+                  onClick={this.onSubmit}
+                >
+                  <PostAddIcon
+                    fontSize="large"
+                  />
+                </button>
+              )}
+          </form>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
+
+CreateForm.propTypes = {
+  isAddLoading: PropTypes.bool,
+  dispatchAddTasksThunk: PropTypes.func,
+};
+
+const mapStateToProps = (state) => ({
+  isAddLoading: addTasksLoading(state),
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchAddTasksThunk: (task) => dispatch(addTasksThunk(task)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreateForm);
